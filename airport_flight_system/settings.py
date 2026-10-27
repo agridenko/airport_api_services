@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
+    "django_filters",
     "users"
 ]
 
@@ -72,6 +73,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "airport_flight_system.wsgi.application"
 
+AUTH_USER_MODEL = "users.User"
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
