@@ -179,8 +179,12 @@ class Ticket(models.Model):
                 f"{self.flight.route.destination.name} "
                 f"(Row {self.row}, Seat {self.seat})")
 
+    @staticmethod
+    def validate_ticket(row, seat, flight):
+        if row > flight.airplane.rows:
+            raise ValidationError(f"Ряд {row} не існує в цьому літаку")
+        if seat > flight.airplane.seats_in_row:
+            raise ValidationError(f"Місце {seat} не існує в цьому рядку")
+
     def clean(self):
-        if self.row > self.flight.airplane.rows:
-            raise ValidationError(f"Ряд {self.row} не існує в цьому літаку")
-        if self.seat > self.flight.airplane.seats_in_row:
-            raise ValidationError(f"Місце {self.seat} не існує в цьому рядку")
+        Ticket.validate_ticket(self.row, self.seat, self.flight)
