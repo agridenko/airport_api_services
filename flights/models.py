@@ -10,8 +10,15 @@ from airport_flight_system import settings
 
 class Airport(models.Model):
     """Airport model."""
-    name = models.CharField(max_length=255)
-    closest_big_city = models.CharField(max_length=255)
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Назва",
+        unique=True,
+    )
+    closest_big_city = models.CharField(
+        max_length=255,
+        verbose_name="Найближче велике місто",
+    )
 
     class Meta:
         verbose_name = "Аеропорт"
@@ -23,7 +30,10 @@ class Airport(models.Model):
 
 class AirplaneType(models.Model):
     """Тип літака"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Назва",
+    )
 
     class Meta:
         verbose_name = "Тип літака"
@@ -35,13 +45,21 @@ class AirplaneType(models.Model):
 
 class Airplane(models.Model):
     """Літак"""
-    name = models.CharField(max_length=255)
-    rows = models.IntegerField()
-    seats_in_row = models.IntegerField()
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Назва",
+    )
+    rows = models.IntegerField(
+        verbose_name="Кількість рядів",
+    )
+    seats_in_row = models.IntegerField(
+        verbose_name="Кількість місць у ряду",
+    )
     airplane_type = models.ForeignKey(
         AirplaneType,
         on_delete=models.CASCADE,
         related_name="airplanes",
+        verbose_name="Тип літака",
     )
 
     class Meta:
@@ -62,14 +80,18 @@ class Route(models.Model):
     source = models.ForeignKey(
         Airport,
         on_delete=models.CASCADE,
-        related_name="source_routes"
+        related_name="source_routes",
+        verbose_name="Початковий аеропорт"
     )
     destination = models.ForeignKey(
         Airport,
         on_delete=models.CASCADE,
-        related_name="destination_routes"
+        related_name="destination_routes",
+        verbose_name="Кінцевий аеропорт"
     )
-    distance = models.IntegerField()
+    distance = models.IntegerField(
+        verbose_name="Відстань",
+    )
 
     class Meta:
         verbose_name = "Маршрут"
@@ -88,19 +110,26 @@ class Flight(models.Model):
     route = models.ForeignKey(
         Route,
         on_delete=models.CASCADE,
-        related_name="flights"
+        related_name="flights",
+        verbose_name="Маршрут"
     )
     airplane = models.ForeignKey(
         Airplane,
         on_delete=models.CASCADE,
-        related_name="flights"
+        related_name="flights",
+        verbose_name="Літак",
     )
-    departure_time = models.DateTimeField()
-    arrival_time = models.DateTimeField()
+    departure_time = models.DateTimeField(
+        verbose_name="Час відправлення",
+    )
+    arrival_time = models.DateTimeField(
+        verbose_name="Час прибуття",
+    )
     crew = models.ManyToManyField(
         "Crew",
         related_name="flights",
         blank=True,
+        verbose_name="Екіпаж",
     )
 
     class Meta:
@@ -109,7 +138,7 @@ class Flight(models.Model):
         ordering = ["departure_time"]
 
     def __str__(self):
-        return f"Flight {self.route.source.name} -> {self.route.destination.name} ({self.departure_time})"
+        return f"Flight {self.route.source.name} -> {self.route.destination.name}"
 
     def clean(self):
         if self.departure_time < timezone.now():
@@ -121,8 +150,14 @@ class Flight(models.Model):
 
 class Crew(models.Model):
     """Екіпаж на рейсі"""
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    first_name = models.CharField(
+        max_length=255,
+        verbose_name="Ім'я",
+    )
+    last_name = models.CharField(
+        max_length=255,
+        verbose_name="Прізвище",
+    )
 
     class Meta:
         verbose_name = "Член екіпажу"
@@ -134,11 +169,15 @@ class Crew(models.Model):
 
 class Order(models.Model):
     """Замовлення на рейс"""
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата та час замовлення",
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="orders"
+        related_name="orders",
+        verbose_name="Користувач",
     )
 
     class Meta:
