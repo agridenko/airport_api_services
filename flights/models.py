@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
@@ -155,18 +157,36 @@ class Order(models.Model):
 
 class Ticket(models.Model):
     """Білет на рейс"""
-    row = models.IntegerField()
-    seat = models.IntegerField()
+    row = models.IntegerField(
+        verbose_name="Ряд"
+    )
+    seat = models.IntegerField(
+        verbose_name="Місце"
+    )
     flight = models.ForeignKey(
         Flight,
         on_delete=models.CASCADE,
-        related_name="tickets"
+        related_name="tickets",
+        verbose_name="Рейс"
     )
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name="tickets"
+        related_name="tickets",
+        verbose_name="Замовлення"
     )
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Ціна",
+        null=True,
+        blank=True
+    )
+
+    def calculate_price(self):
+        base_price = 50
+        distance_multiplier = self.flight.route.distance * 0.1
+        return base_price + distance_multiplier
 
     class Meta:
         verbose_name = "Квиток"
@@ -188,3 +208,16 @@ class Ticket(models.Model):
 
     def clean(self):
         Ticket.validate_ticket(self.row, self.seat, self.flight)
+
+    def save(self, *args, **kwargs):
+        """Записуэмо ціну квитка пристворені з разрахунку"""
+        if not self.price:
+            base_price = Decimal("50.00")
+            # Перевіряємо, чи є маршрут і відстань, щоб не було помилок
+            if self.flight.route and self.flight.route.distance:
+                distance_multiplier = Decimal(str(self.flight.route.distance)) * Decimal("0.1")
+                self.price = base_price + distance_multiplier
+            else:
+                self.price = base_price
+
+        return super().save(*args, **kwargs)

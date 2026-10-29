@@ -134,6 +134,12 @@ class FlightSerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     """Серіалізатор для моделі Ticket"""
+    price = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        read_only=True
+    )
+
     flight = FlightSerializer(read_only=True)
     flight_id = serializers.PrimaryKeyRelatedField(
         queryset=Flight.objects.all(),
@@ -148,8 +154,10 @@ class TicketSerializer(serializers.ModelSerializer):
             "row",
             "seat",
             "flight",
-            "flight_id"
+            "flight_id",
+            "price"
         ]
+        read_only_fields = ["id", "price"]
 
     def validate(self, data):
         """Перевірка наявності місця на рейсі"""
