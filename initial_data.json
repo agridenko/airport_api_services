@@ -1,0 +1,710 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "0ocv4cyr7zttkdkkljd1nesf711x7tsm",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hCYwoAu3fcMZIBBqoYmpV0Z765NutDtf-_9lwi0rTVsnZcwZXERWpx-t0jpwW0H-U7tNss0t3WZotwVedAuxznz83q4fweVev3Wyis7aG-Q_WCBnUlWERECFqOj8YQJkYcSLRMBICULpTjPypV4BhDvD8KwN5w:1xLmvf:W46ckQsS2C6UJQ-T2tDl79uPyFIPRrZf8I8lt9Zysfo",
+    "expire_date": "2026-11-10T19:33:51.136Z"
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$3F8Cd2NhZdcgdheJFG3asL$xl7x5zY6gY4hEYsmb1PxuxzOIpJB0hlYHHElvsXjIFQ=",
+    "last_login": "2026-10-27T19:33:51.133Z",
+    "is_superuser": true,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-10-27T17:47:15.506Z",
+    "email": "admin@admin.com",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$9vsE5dYCgHAP98nW0bUL0p$pyyQL6GHugmzlFw7aparfPJ2+p+O4h8sPsESPgBgMuI=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Test",
+    "last_name": "User",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-29T10:40:25Z",
+    "email": "test@user.com",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 1,
+  "fields": {
+    "name": "Хартсфилд-Джексон",
+    "closest_big_city": "Атланта"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 2,
+  "fields": {
+    "name": "Міжнародний аеропорт імені короля Фахда",
+    "closest_big_city": "Даммам (Саудівська Аравія)"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 3,
+  "fields": {
+    "name": "Міжнародний аеропорт Денвера",
+    "closest_big_city": "Денвер (США, штат Колорадо)"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 4,
+  "fields": {
+    "name": "Міжнародний аеропорт Даллас/Форт-Верт",
+    "closest_big_city": "Даллас (США, штат Колорадо)"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 5,
+  "fields": {
+    "name": "Міжнародний аеропорт Орландо",
+    "closest_big_city": "Орландо (США, штат Флорида)"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 6,
+  "fields": {
+    "name": "Міжнародний аеропорт Вашингтон Даллес",
+    "closest_big_city": "Вашингтон (США, штат Вірджинія / округ Колумбія)"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 7,
+  "fields": {
+    "name": "Міжнародний аеропорт Пекін Дасін",
+    "closest_big_city": "Пекін (Китай)"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 8,
+  "fields": {
+    "name": "Шанхай Пудун",
+    "closest_big_city": "Шанхай (Китай)"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 9,
+  "fields": {
+    "name": "Каїрський міжнародний аеропорт",
+    "closest_big_city": "Каїр (Єгипет)"
+  }
+},
+{
+  "model": "flights.airport",
+  "pk": 10,
+  "fields": {
+    "name": "Міжнародний аеропорт Суварнабхумі",
+    "closest_big_city": "Бангкок (Таїланд)"
+  }
+},
+{
+  "model": "flights.airplanetype",
+  "pk": 1,
+  "fields": {
+    "name": "Літак"
+  }
+},
+{
+  "model": "flights.airplanetype",
+  "pk": 2,
+  "fields": {
+    "name": "Дирижабль"
+  }
+},
+{
+  "model": "flights.airplanetype",
+  "pk": 3,
+  "fields": {
+    "name": "Гелікоптер"
+  }
+},
+{
+  "model": "flights.airplane",
+  "pk": 1,
+  "fields": {
+    "name": "Airbus A350-1000",
+    "rows": 55,
+    "seats_in_row": 8,
+    "airplane_type": 1
+  }
+},
+{
+  "model": "flights.airplane",
+  "pk": 2,
+  "fields": {
+    "name": "Gulfstream G700",
+    "rows": 7,
+    "seats_in_row": 3,
+    "airplane_type": 1
+  }
+},
+{
+  "model": "flights.airplane",
+  "pk": 3,
+  "fields": {
+    "name": "Eurocopter (Airbus Helicopters) H145",
+    "rows": 3,
+    "seats_in_row": 3,
+    "airplane_type": 3
+  }
+},
+{
+  "model": "flights.route",
+  "pk": 1,
+  "fields": {
+    "source": 1,
+    "destination": 2,
+    "distance": 11760
+  }
+},
+{
+  "model": "flights.route",
+  "pk": 2,
+  "fields": {
+    "source": 10,
+    "destination": 8,
+    "distance": 2896
+  }
+},
+{
+  "model": "flights.flight",
+  "pk": 1,
+  "fields": {
+    "route": 1,
+    "airplane": 1,
+    "departure_time": "2026-11-10T06:00:00Z",
+    "arrival_time": "2026-11-10T11:15:00Z",
+    "crew": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "flights.flight",
+  "pk": 2,
+  "fields": {
+    "route": 2,
+    "airplane": 2,
+    "departure_time": "2026-11-05T16:00:00Z",
+    "arrival_time": "2026-11-05T19:55:00Z",
+    "crew": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "flights.crew",
+  "pk": 1,
+  "fields": {
+    "first_name": "Flayer",
+    "last_name": "Pilotov"
+  }
+},
+{
+  "model": "flights.crew",
+  "pk": 2,
+  "fields": {
+    "first_name": "Testov",
+    "last_name": "Testich"
+  }
+},
+{
+  "model": "flights.crew",
+  "pk": 3,
+  "fields": {
+    "first_name": "Alex",
+    "last_name": "Letchikovich"
+  }
+},
+{
+  "model": "flights.order",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-10-28T17:00:40.280Z",
+    "user": [
+      "admin@admin.com"
+    ]
+  }
+},
+{
+  "model": "flights.order",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-10-29T18:08:24.448Z",
+    "user": [
+      "test@user.com"
+    ]
+  }
+},
+{
+  "model": "flights.ticket",
+  "pk": 1,
+  "fields": {
+    "row": 3,
+    "seat": 3,
+    "flight": 2,
+    "order": 1,
+    "price": "1.00"
+  }
+},
+{
+  "model": "flights.ticket",
+  "pk": 2,
+  "fields": {
+    "row": 2,
+    "seat": 2,
+    "flight": 1,
+    "order": 2,
+    "price": "1226.00"
+  }
+},
+{
+  "model": "flights.ticket",
+  "pk": 3,
+  "fields": {
+    "row": 2,
+    "seat": 3,
+    "flight": 1,
+    "order": 2,
+    "price": "1226.00"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-10-27T19:45:04.267Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "crew"
+    ],
+    "object_id": "1",
+    "object_repr": "Flayer Pilotov",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-10-27T19:45:28.945Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "crew"
+    ],
+    "object_id": "2",
+    "object_repr": "Testov Testich",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-10-28T16:50:19.187Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "airplane"
+    ],
+    "object_id": "1",
+    "object_repr": "Airbus A350-1000 (Літак)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-10-28T16:50:42.405Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "airplane"
+    ],
+    "object_id": "2",
+    "object_repr": "Gulfstream G700 (Літак)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-10-28T16:52:35.443Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "airplane"
+    ],
+    "object_id": "3",
+    "object_repr": "Eurocopter (Airbus Helicopters) H145 (Гелікоптер)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-10-28T16:56:51.891Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "route"
+    ],
+    "object_id": "1",
+    "object_repr": "Хартсфилд-Джексон (Атланта) - Міжнародний аеропорт імені короля Фахда (Даммам (Саудівська Аравія))",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-10-28T16:57:44.828Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "flight"
+    ],
+    "object_id": "1",
+    "object_repr": "Flight Хартсфилд-Джексон -> Міжнародний аеропорт імені короля Фахда (2026-11-10 06:00:00+00:00)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-10-28T16:59:02.145Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "route"
+    ],
+    "object_id": "2",
+    "object_repr": "Міжнародний аеропорт Суварнабхумі (Бангкок (Таїланд)) - Шанхай Пудун (Шанхай (Китай))",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2026-10-28T17:00:15.330Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "flight"
+    ],
+    "object_id": "2",
+    "object_repr": "Flight Міжнародний аеропорт Суварнабхумі -> Шанхай Пудун (2026-11-05 16:00:00+00:00)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2026-10-28T17:00:40.281Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "order"
+    ],
+    "object_id": "1",
+    "object_repr": "Замовлення 1 для   (admin@admin.com)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2026-10-28T17:02:24.631Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "1",
+    "object_repr": "Ticket Міжнародний аеропорт Суварнабхумі->Шанхай Пудун (Row 3, Seat 3)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2026-10-29T10:40:26.185Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "test@user.com",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2026-10-29T10:40:42.827Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "users",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "test@user.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2026-10-29T18:08:24.449Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "order"
+    ],
+    "object_id": "2",
+    "object_repr": "Замовлення 2 для Test User (test@user.com)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 15,
+  "fields": {
+    "action_time": "2026-10-29T18:17:26.394Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "2",
+    "object_repr": "Ticket Хартсфилд-Джексон->Міжнародний аеропорт імені короля Фахда (Row 2, Seat 2)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 16,
+  "fields": {
+    "action_time": "2026-10-29T18:56:14.253Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "2",
+    "object_repr": "Ticket Хартсфилд-Джексон->Міжнародний аеропорт імені короля Фахда (Row 2, Seat 2)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 17,
+  "fields": {
+    "action_time": "2026-10-29T18:56:24.765Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "3",
+    "object_repr": "Ticket Хартсфилд-Джексон->Міжнародний аеропорт імені короля Фахда (Row 2, Seat 2)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 18,
+  "fields": {
+    "action_time": "2026-10-29T19:00:47.865Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "3",
+    "object_repr": "Ticket Хартсфилд-Джексон->Міжнародний аеропорт імені короля Фахда (Row 2, Seat 2)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 19,
+  "fields": {
+    "action_time": "2026-10-29T19:00:55.449Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "4",
+    "object_repr": "Ticket Хартсфилд-Джексон->Міжнародний аеропорт імені короля Фахда (Row 2, Seat 2)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 20,
+  "fields": {
+    "action_time": "2026-10-29T19:21:59.658Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "4",
+    "object_repr": "Ticket Хартсфилд-Джексон->Міжнародний аеропорт імені короля Фахда (Row 2, Seat 2)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 21,
+  "fields": {
+    "action_time": "2026-10-29T19:23:46.958Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "2",
+    "object_repr": "Ticket Хартсфилд-Джексон->Міжнародний аеропорт імені короля Фахда (Row 2, Seat 2)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 22,
+  "fields": {
+    "action_time": "2026-10-29T19:23:54.970Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "ticket"
+    ],
+    "object_id": "3",
+    "object_repr": "Ticket Хартсфилд-Джексон->Міжнародний аеропорт імені короля Фахда (Row 2, Seat 3)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 23,
+  "fields": {
+    "action_time": "2026-10-29T19:46:41.857Z",
+    "user": [
+      "admin@admin.com"
+    ],
+    "content_type": [
+      "flights",
+      "flight"
+    ],
+    "object_id": "1",
+    "object_repr": "Flight Хартсфилд-Джексон -> Міжнародний аеропорт імені короля Фахда",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"\\u0427\\u0430\\u0441 \\u043f\\u0440\\u0438\\u0431\\u0443\\u0442\\u0442\\u044f\"]}}]"
+  }
+}
+]

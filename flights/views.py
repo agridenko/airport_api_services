@@ -214,8 +214,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Користувач бачить лише свої замовлення"""
         if self.request.user.is_staff:
-            return Order.objects.all()
-        return Order.objects.filter(user=self.request.user)
+            return Order.objects.all().select_related()
+        return Order.objects.filter(user=self.request.user).select_related()
 
     @action(detail=True, methods=["post"])
     def add_ticket(self, request, pk=None):
@@ -271,5 +271,5 @@ class TicketViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Користувач бачить тільки свої квитки"""
         if self.request.user.is_staff:
-            return Ticket.objects.all()
-        return Ticket.objects.filter(order__user=self.request.user)
+            return Ticket.objects.all().select_related()
+        return Ticket.objects.filter(order__user=self.request.user).select_related()
