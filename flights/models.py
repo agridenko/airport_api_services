@@ -67,7 +67,7 @@ class Airplane(models.Model):
         verbose_name_plural = "Літаки"
 
     def __str__(self):
-        return f"{self.name} ({self.airplane_type.name})"
+        return f"Airplane: {self.name} (Type ID: {self.airplane_type_id})"
 
     @property
     def total_seats(self):
@@ -98,7 +98,7 @@ class Route(models.Model):
         verbose_name_plural = "Маршрути"
 
     def __str__(self):
-        return f"{self.source} - {self.destination}"
+        return f"Route {self.source_id} -> {self.destination_id} ({self.distance} km)"
 
     def clean(self):
         if self.source == self.destination:
@@ -138,7 +138,8 @@ class Flight(models.Model):
         ordering = ["departure_time"]
 
     def __str__(self):
-        return f"Flight {self.route.source.name} -> {self.route.destination.name}"
+        return f"Flight #{self.id} ({self.departure_time.strftime('%Y-%m-%d %H:%M')})"
+
 
     def clean(self):
         if self.departure_time < timezone.now():

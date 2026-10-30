@@ -5,7 +5,7 @@ set -e
 echo "Старт початкового скріпту ...."
 
 echo "Очікування готовності PostgreSQL..."
-while ! python manage.py check --database default > /dev/null 2>&1; do
+while ! python -c "import socket; s = socket.socket(); s.settimeout(2); s.connect(('airport_db', 5432))" > /dev/null 2>&1; do
     echo "   База даних ще не готова, чекаємо 2 секунди..."
     sleep 2
 done

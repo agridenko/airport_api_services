@@ -194,3 +194,13 @@ SIMPLE_JWT = {
     # "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
 }
+
+# --- Налаштування Django Debug Toolbar для Docker ---
+if DEBUG:
+    # Ця функція перевизначає стандартну перевірку INTERNAL_IPS
+    def show_toolbar(request):
+        return True
+
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": show_toolbar,
+    }

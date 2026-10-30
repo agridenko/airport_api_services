@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.db.models import Count, F
 
 from flights.models import (
     Airport, AirplaneType, Airplane,
@@ -18,7 +19,7 @@ from flights.serializers import (
 
 
 class AirportViewSet(viewsets.ModelViewSet):
-    queryset = Airport.objects.all()
+    queryset = Airport.objects.all().select_related()
     serializer_class = AirportSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["closest_big_city"]
@@ -45,12 +46,12 @@ class AirportViewSet(viewsets.ModelViewSet):
 
 
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
-    queryset = AirplaneType.objects.all()
+    queryset = AirplaneType.objects.all().select_related()
     serializer_class = AirplaneTypeSerializer
 
 
 class AirplaneViewSet(viewsets.ModelViewSet):
-    queryset = Airplane.objects.all()
+    queryset = Airplane.objects.all().select_related()
     serializer_class = AirplaneSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["airplane_type"]
@@ -80,10 +81,13 @@ class AirplaneViewSet(viewsets.ModelViewSet):
 
 
 class RouteViewSet(viewsets.ModelViewSet):
-    queryset = Route.objects.all()
+    queryset = Route.objects.all().select_related()
     serializer_class = RouteSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["source", "destination"]
+
+    def get_queryset(self):
+        return Route.objects.select_related("source", "destination")
 
     @extend_schema(
         parameters=[
@@ -120,12 +124,30 @@ class RouteViewSet(viewsets.ModelViewSet):
 
 
 class FlightViewSet(viewsets.ModelViewSet):
-    queryset = Flight.objects.all()
     serializer_class = FlightSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ["route", "airplane", "departure_time"]
     ordering_fields = ["departure_time", "arrival_time"]
     ordering = ["departure_time"]
+
+    def get_queryset(self):
+        queryset = Flight.objects.all()
+
+        if self.action in ["list", "retrieve", "upcoming"]:
+            return (
+                queryset.select_related(
+                    "route__source",
+                    "route__destination",
+                    "airplane__airplane_type"
+                )
+                .prefetch_related("crew")  # Подгружаем экипаж
+                .annotate(booked_seats_count=Count("tickets"))
+            )
+
+        if self.action == "available_seats":
+            return queryset.select_related("airplane").prefetch_related("tickets")
+
+        return queryset
 
     @extend_schema(
         parameters=[
@@ -175,10 +197,8 @@ class FlightViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def upcoming(self, request):
         """Отримати майбутні рейси"""
-        flights = Flight.objects.filter(
-            departure_time__gte=timezone.now()
-        )
-        serializer = FlightSerializer(flights, many=True)
+        flights = self.get_queryset().filter(departure_time__gte=timezone.now())
+        serializer = self.get_serializer(flights, many=True)
         return Response(serializer.data)
 
 

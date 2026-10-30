@@ -127,8 +127,12 @@ class FlightSerializer(serializers.ModelSerializer):
 
     def get_available_seats(self, obj):
         """Отримання доступних місць на рейсі"""
+        booked_seats = getattr(obj, "booked_seats_count", None)
+
+        if booked_seats is None:
+            booked_seats = obj.tickets.count()
+
         total_seats = obj.airplane.total_seats
-        booked_seats = obj.tickets.count()
         return total_seats - booked_seats
 
 
