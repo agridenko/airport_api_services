@@ -14,7 +14,11 @@ app_name = "flights"
 
 router = routers.DefaultRouter()
 router.register("airports", AirportViewSet, basename="airport")
-router.register("airplane-types", AirplaneTypeViewSet, basename="airplane-type")
+router.register(
+    "airplane-types",
+    AirplaneTypeViewSet,
+    basename="airplane-type"
+)
 router.register("airplanes", AirplaneViewSet, basename="airplane")
 router.register("routes", RouteViewSet, basename="route")
 router.register("flights", FlightViewSet, basename="flight")

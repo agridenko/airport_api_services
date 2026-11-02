@@ -150,7 +150,8 @@ class FlightSerializer(serializers.ModelSerializer):
 
         if arrival_time and arrival_time and arrival_time <= departure_time:
             raise serializers.ValidationError(
-                "Час прибуття не може бути меншим або дорівнювати часу відправлення"
+                "Час прибуття не може бути "
+                "меншим або дорівнювати часу відправлення"
             )
 
         return data
@@ -270,7 +271,8 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def get_user(self, obj):
-        return f"{obj.user.first_name} {obj.user.last_name} ({obj.user.email})".strip() or obj.user.email
+        return (f"{obj.user.first_name} {obj.user.last_name} "
+                f"({obj.user.email})").strip() or obj.user.email
 
     def get_total_cost(self, obj):
         return obj.total_cost

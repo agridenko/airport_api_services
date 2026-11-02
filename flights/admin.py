@@ -22,13 +22,26 @@ class AirportAdmin(admin.ModelAdmin):
 
 @admin.register(Flight)
 class FlightAdmin(admin.ModelAdmin):
-    list_display = ["id", "route", "airplane", "departure_time", "arrival_time"]
+    list_display = [
+        "id",
+        "route",
+        "airplane",
+        "departure_time",
+        "arrival_time"
+    ]
     ordering = ["departure_time"]
 
 
 @admin.register(Airplane)
 class AirplaneAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "rows", "seats_in_row", "airplane_type", "total_seats"]
+    list_display = [
+        "id",
+        "name",
+        "rows",
+        "seats_in_row",
+        "airplane_type",
+        "total_seats"
+    ]
 
 
 @admin.register(Route)

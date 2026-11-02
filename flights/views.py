@@ -175,7 +175,8 @@ class FlightViewSet(viewsets.ModelViewSet):
             ),
             OpenApiParameter(
                 name="departure_time",
-                description="Фільтрувати рейс за часом відправлення (приклад: 2026-11-05T16:00:00Z)",
+                description="Фільтрувати рейс за часом "
+                            "відправлення (приклад: 2026-11-05T16:00:00Z)",
                 required=False,
                 type=str
             )
@@ -206,13 +207,15 @@ class FlightViewSet(viewsets.ModelViewSet):
         return Response({
             "flight_id": flight.id,
             "total_available": len(available),
-            "seats": available[:50] # Показуємо перші 50 доступних місць для продуктивності
+            "seats": available[:50]
         })
 
     @action(detail=False, methods=["get"])
     def upcoming(self, request):
         """Отримати майбутні рейси"""
-        flights = self.get_queryset().filter(departure_time__gte=timezone.now())
+        flights = self.get_queryset().filter(
+            departure_time__gte=timezone.now()
+        )
         serializer = self.get_serializer(flights, many=True)
         return Response(serializer.data)
 

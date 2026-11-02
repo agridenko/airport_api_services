@@ -102,7 +102,10 @@ class Route(models.Model):
         ordering = ["id"]
 
     def __str__(self):
-        return f"Route {self.source_id} -> {self.destination_id} ({self.distance} km)"
+        return (
+            f"Route {self.source_id} -> {self.destination_id}"
+            f" ({self.distance} km)"
+        )
 
     def clean(self):
         if self.source == self.destination:
@@ -142,15 +145,20 @@ class Flight(models.Model):
         ordering = ["departure_time"]
 
     def __str__(self):
-        return f"Flight #{self.id} ({self.departure_time.strftime('%Y-%m-%d %H:%M')})"
-
+        return (
+            f"Flight #{self.id} "
+            f"({self.departure_time.strftime('%Y-%m-%d %H:%M')})"
+        )
 
     def clean(self):
         if self.departure_time < timezone.now():
             raise ValidationError("Вибірка рейсу не може бути в минулому.")
 
         if self.arrival_time <= self.departure_time:
-            raise ValidationError("Час прибуття не може бути раніше часу відправлення.")
+            raise ValidationError(
+                "Час прибуття не може "
+                "бути раніше часу відправлення."
+            )
 
 
 class Crew(models.Model):
@@ -260,7 +268,9 @@ class Ticket(models.Model):
             base_price = Decimal("50.00")
             # Перевіряємо, чи є маршрут і відстань, щоб не було помилок
             if self.flight.route and self.flight.route.distance:
-                distance_multiplier = Decimal(str(self.flight.route.distance)) * Decimal("0.1")
+                distance_multiplier = Decimal(
+                    str(self.flight.route.distance)
+                ) * Decimal("0.1")
                 self.price = base_price + distance_multiplier
             else:
                 self.price = base_price
