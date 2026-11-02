@@ -26,9 +26,9 @@ urlpatterns = [
 
     path("api/users/", include("users.urls", namespace="users")),
 
-    path("api/fligthts/", include("flights.urls", namespace="flights")),
+    path("api/flights/", include("flights.urls", namespace="flights")),
 
-    path("api/shema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
 ]
 

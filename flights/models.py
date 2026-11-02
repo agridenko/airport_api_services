@@ -23,6 +23,7 @@ class Airport(models.Model):
     class Meta:
         verbose_name = "Аеропорт"
         verbose_name_plural = "Аеропорти"
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name} ({self.closest_big_city})"
@@ -38,6 +39,7 @@ class AirplaneType(models.Model):
     class Meta:
         verbose_name = "Тип літака"
         verbose_name_plural = "Типи літаків"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -65,6 +67,7 @@ class Airplane(models.Model):
     class Meta:
         verbose_name = "Літак"
         verbose_name_plural = "Літаки"
+        ordering = ["name"]
 
     def __str__(self):
         return f"Airplane: {self.name} (Type ID: {self.airplane_type_id})"
@@ -96,6 +99,7 @@ class Route(models.Model):
     class Meta:
         verbose_name = "Маршрут"
         verbose_name_plural = "Маршрути"
+        ordering = ["id"]
 
     def __str__(self):
         return f"Route {self.source_id} -> {self.destination_id} ({self.distance} km)"
@@ -163,6 +167,7 @@ class Crew(models.Model):
     class Meta:
         verbose_name = "Член екіпажу"
         verbose_name_plural = "Екіпаж"
+        ordering = ["first_name", "last_name"]
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -187,11 +192,13 @@ class Order(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"Замовлення {self.id} для {self.user.first_name} {self.user.last_name} ({self.user.email})"
+        return f"Замовлення №{self.id} (User ID: {self.user_id})"
 
     @property
     def total_cost(self):
-        """Загальна вартість замовлення"""
+        """Загальна вартість замовлення з фолбеком для кэшу БД"""
+        if hasattr(self, "total_order_cost"):
+            return self.total_order_cost or 0
         return sum(ticket.price for ticket in self.tickets.all())
 
 
@@ -235,9 +242,7 @@ class Ticket(models.Model):
         ordering = ["flight", "row", "seat"]
 
     def __str__(self):
-        return (f"Ticket {self.flight.route.source.name}->"
-                f"{self.flight.route.destination.name} "
-                f"(Row {self.row}, Seat {self.seat})")
+        return f"Ticket {self.id} for {self.flight}"
 
     @staticmethod
     def validate_ticket(row, seat, flight):

@@ -4,8 +4,8 @@ from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from django.db.models import Count, F
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from django.db.models import Count, F, Sum
 
 from flights.models import (
     Airport, AirplaneType, Airplane,
@@ -19,8 +19,9 @@ from flights.serializers import (
 
 
 class AirportViewSet(viewsets.ModelViewSet):
-    queryset = Airport.objects.all().select_related()
+    queryset = Airport.objects.all()
     serializer_class = AirportSerializer
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["closest_big_city"]
     search_fields = ["name", "closest_big_city"]
@@ -44,15 +45,21 @@ class AirportViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAdminUser()]
+        return super().get_permissions()
+
 
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
-    queryset = AirplaneType.objects.all().select_related()
+    queryset = AirplaneType.objects.all()
     serializer_class = AirplaneTypeSerializer
 
 
 class AirplaneViewSet(viewsets.ModelViewSet):
-    queryset = Airplane.objects.all().select_related()
+    queryset = Airplane.objects.all().select_related("airplane_type")
     serializer_class = AirplaneSerializer
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["airplane_type"]
 
@@ -69,6 +76,11 @@ class AirplaneViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAdminUser()]
+        return super().get_permissions()
+
     @action(detail=True, methods=["get"])
     def seats_availability(self, request, pk=None):
         """Повертає кількість доступних місць на літаку."""
@@ -83,11 +95,17 @@ class AirplaneViewSet(viewsets.ModelViewSet):
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all().select_related()
     serializer_class = RouteSerializer
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["source", "destination"]
 
     def get_queryset(self):
         return Route.objects.select_related("source", "destination")
+
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAdminUser()]
+        return super().get_permissions()
 
     @extend_schema(
         parameters=[
@@ -124,30 +142,22 @@ class RouteViewSet(viewsets.ModelViewSet):
 
 
 class FlightViewSet(viewsets.ModelViewSet):
+    queryset = (
+        Flight.objects.select_related(
+            "route__source",
+            "route__destination",
+            "airplane__airplane_type"
+        )
+        .prefetch_related("crew")
+        .annotate(booked_seats_count=Count("tickets"))
+    )
+
     serializer_class = FlightSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ["route", "airplane", "departure_time"]
     ordering_fields = ["departure_time", "arrival_time"]
     ordering = ["departure_time"]
-
-    def get_queryset(self):
-        queryset = Flight.objects.all()
-
-        if self.action in ["list", "retrieve", "upcoming"]:
-            return (
-                queryset.select_related(
-                    "route__source",
-                    "route__destination",
-                    "airplane__airplane_type"
-                )
-                .prefetch_related("crew")  # Подгружаем экипаж
-                .annotate(booked_seats_count=Count("tickets"))
-            )
-
-        if self.action == "available_seats":
-            return queryset.select_related("airplane").prefetch_related("tickets")
-
-        return queryset
+    permission_classes = [AllowAny]
 
     @extend_schema(
         parameters=[
@@ -173,6 +183,11 @@ class FlightViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAdminUser()]
+        return super().get_permissions()
 
     @action(detail=True, methods=["get"])
     def available_seats(self, request, pk=None):
@@ -207,6 +222,7 @@ class CrewViewSet(viewsets.ModelViewSet):
     serializer_class = CrewSerializer
     search_fields = ["first_name", "last_name"]
     filter_backends = [filters.SearchFilter]
+    permission_classes = [AllowAny]
 
     @extend_schema(
         parameters=[
@@ -221,9 +237,23 @@ class CrewViewSet(viewsets.ModelViewSet):
     def list(self, request):
         return super().list(request)
 
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAdminUser()]
+        return super().get_permissions()
+
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+    queryset = (
+        Order.objects.select_related("user")
+        .prefetch_related(
+            "tickets__flight__route__source",
+            "tickets__flight__route__destination",
+            "tickets__flight__airplane__airplane_type",
+            "tickets__flight__crew"
+        ).annotate(total_order_cost=Sum("tickets__price"))
+    )
+
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
@@ -233,54 +263,25 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Користувач бачить лише свої замовлення"""
+        queryset = self.queryset
         if self.request.user.is_staff:
-            return Order.objects.all().select_related()
-        return Order.objects.filter(user=self.request.user).select_related()
+            return queryset
+        return queryset.filter(user=self.request.user)
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=['post'])
     def add_ticket(self, request, pk=None):
         """Додати квиток до замовлення"""
         order = self.get_object()
-        flight_id = request.data.get("flight_id")
-        row = request.data.get("row")
-        seat = request.data.get("seat")
 
-        if not all([flight_id, row, seat]):
-            return Response(
-                {"error": "flight_id, row, and seat are required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        data = request.data.copy()
+        data['order'] = order.id
 
-        try:
-            flight = Flight.objects.get(id=flight_id)
-        except Flight.DoesNotExist:
-            return Response(
-                {"error": "Flight not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+        serializer = TicketSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
 
-        # Перевірка чи місце вже зайняте
-        if Ticket.objects.filter(
-                flight=flight,
-                row=row,
-                seat=seat
-        ).exists():
-            return Response(
-                {"error": "Seat already taken"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer.save(order=order)
 
-        ticket = Ticket.objects.create(
-            order=order,
-            flight=flight,
-            row=row,
-            seat=seat
-        )
-
-        return Response(
-            TicketSerializer(ticket).data,
-            status=status.HTTP_201_CREATED
-        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -290,6 +291,20 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Користувач бачить тільки свої квитки"""
+        queryset = (
+            Ticket.objects.select_related(
+                "order",
+                "flight",
+                "flight__route",
+                "flight__route__source",
+                "flight__route__destination",
+                "flight__airplane",
+                "flight__airplane__airplane_type",
+            )
+            .prefetch_related("flight__crew")
+        )
+
         if self.request.user.is_staff:
-            return Ticket.objects.all().select_related()
-        return Ticket.objects.filter(order__user=self.request.user).select_related()
+            return queryset
+
+        return queryset.filter(order__user=self.request.user)

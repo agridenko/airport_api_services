@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 
 from flights.models import (
@@ -77,6 +78,22 @@ class RouteSerializer(serializers.ModelSerializer):
             "distance"
         ]
 
+    def validate(self, data):
+        source = data.get("source")
+        destination = data.get("destination")
+
+        if source == destination:
+            raise serializers.ValidationError(
+                "Початковий та кінцевий аеропорти не можуть бути однаковими"
+            )
+
+        if data.get("distance") is None and data["distance"] <= 0:
+            raise serializers.ValidationError(
+                "Відстань не може бути від'ємною або дорівнювати нулю"
+            )
+
+        return data
+
 
 class CrewSerializer(serializers.ModelSerializer):
     """Серіалізатор для моделі Crew"""
@@ -91,22 +108,19 @@ class FlightSerializer(serializers.ModelSerializer):
     route = RouteSerializer(read_only=True)
     route_id = serializers.PrimaryKeyRelatedField(
         queryset=Route.objects.all(),
-        write_only=True,
-        source="route"
+        write_only=True
     )
     airplane = AirplaneSerializer(read_only=True)
     airplane_id = serializers.PrimaryKeyRelatedField(
         queryset=Airplane.objects.all(),
-        write_only=True,
-        source="airplane"
+        write_only=True
     )
     crew = CrewSerializer(many=True, read_only=True)
     crew_ids = serializers.PrimaryKeyRelatedField(
         queryset=Crew.objects.all(),
         many=True,
         write_only=True,
-        required=False,
-        source="crew"
+        required=False
     )
     available_seats = serializers.SerializerMethodField()
 
@@ -125,6 +139,22 @@ class FlightSerializer(serializers.ModelSerializer):
             "available_seats"
         ]
 
+    def validate(self, data):
+        departure_time = data.get("departure_time")
+        arrival_time = data.get("arrival_time")
+
+        if departure_time and departure_time < timezone.now():
+            raise serializers.ValidationError(
+                "Час відправлення не може бути меншим за поточний час"
+            )
+
+        if arrival_time and arrival_time and arrival_time <= departure_time:
+            raise serializers.ValidationError(
+                "Час прибуття не може бути меншим або дорівнювати часу відправлення"
+            )
+
+        return data
+
     def get_available_seats(self, obj):
         """Отримання доступних місць на рейсі"""
         booked_seats = getattr(obj, "booked_seats_count", None)
@@ -132,8 +162,27 @@ class FlightSerializer(serializers.ModelSerializer):
         if booked_seats is None:
             booked_seats = obj.tickets.count()
 
-        total_seats = obj.airplane.total_seats
-        return total_seats - booked_seats
+        return obj.airplane.total_seats - booked_seats
+
+    def create(self, validated_data):
+        crew_data = validated_data.pop("crew_ids", [])
+        validated_data["route"] = validated_data.pop("route_id")
+        validated_data["airplane"] = validated_data.pop("airplane_id")
+
+        flight = Flight.objects.create(**validated_data)
+        flight.crew.set(crew_data)
+
+        return flight
+
+    def update(self, instance, validated_data):
+        if "route_id" in validated_data:
+            instance.route = validated_data.pop("route_id")
+        if "airplane_id" in validated_data:
+            instance.airplane = validated_data.pop("airplane_id")
+        if "crew_ids" in validated_data:
+            instance.crew.set(validated_data.pop("crew_ids"))
+
+        return super().update(instance, validated_data)
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -169,6 +218,26 @@ class TicketSerializer(serializers.ModelSerializer):
         row = data.get("row")
         seat = data.get("seat")
 
+        if row < 1:
+            raise serializers.ValidationError(
+                "Ряд має бути більшим або рівним 1."
+            )
+
+        if seat < 1:
+            raise serializers.ValidationError(
+                "Місце має бути більшим або рівним 1."
+            )
+
+        if row > flight.airplane.rows:
+            raise serializers.ValidationError(
+                f"Ряд {row} не існує на літаку."
+            )
+
+        if seat > flight.airplane.seats_in_row:
+            raise serializers.ValidationError(
+                f"Місце {seat} не існує на літаку."
+            )
+
         if Ticket.objects.filter(
                 flight=flight, row=row, seat=seat
         ).exists():
@@ -176,24 +245,19 @@ class TicketSerializer(serializers.ModelSerializer):
                 f"Місце {row}-{seat} вже зайняте на цьому рейсі"
             )
 
-        # Перевірка наявності місця на рейсі
-        if row > flight.airplane.rows:
-            raise serializers.ValidationError(
-                f"Ряд {row} не існує на самоліті"
-            )
-        if seat > flight.airplane.seats_in_row:
-            raise serializers.ValidationError(
-                f"Місце {seat} не існує на самоліті"
-            )
-
         return data
+
+    def create(self, validated_data):
+        if "flight_id" in validated_data:
+            validated_data["flight"] = validated_data.pop("flight_id")
+        return super().create(validated_data)
 
 
 class OrderSerializer(serializers.ModelSerializer):
     """Серіалізатор для моделі Order"""
     tickets = TicketSerializer(many=True, read_only=True)
-    user = serializers.StringRelatedField(read_only=True)
-    total_cost = serializers.ReadOnlyField()
+    user = serializers.SerializerMethodField()
+    total_cost = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -204,3 +268,9 @@ class OrderSerializer(serializers.ModelSerializer):
             "total_cost",
             "created_at"
         ]
+
+    def get_user(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name} ({obj.user.email})".strip() or obj.user.email
+
+    def get_total_cost(self, obj):
+        return obj.total_cost
