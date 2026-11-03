@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from django.db.models import Count, F, Sum
+from django.db.models import Count, Sum
 
 from flights.models import (
     Airport, AirplaneType, Airplane,
@@ -30,13 +30,13 @@ class AirportViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="closest_big_city",
-                description="Фільтрувати аеропорт за найближчим містом",
+                description="Filter airports by closest big city.",
                 required=False,
                 type=str
             ),
             OpenApiParameter(
                 name="search",
-                description="Фільтрувати аеропорт за назвою",
+                description="Search airports by name or closest big city.",
                 required=False,
                 type=str
             )
@@ -54,6 +54,12 @@ class AirportViewSet(viewsets.ModelViewSet):
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
     queryset = AirplaneType.objects.all()
     serializer_class = AirplaneTypeSerializer
+    permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAdminUser()]
+        return super().get_permissions()
 
 
 class AirplaneViewSet(viewsets.ModelViewSet):
@@ -67,7 +73,7 @@ class AirplaneViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="airplane_type",
-                description="Фільтрувати літак за типом по його id",
+                description="Filter airplanes by airplane type ID.",
                 required=False,
                 type=int
             )
@@ -83,7 +89,7 @@ class AirplaneViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def seats_availability(self, request, pk=None):
-        """Повертає кількість доступних місць на літаку."""
+        """Return the number of seats available on the airplane."""
         airplane = self.get_object()
         return Response({
             "total_seats": airplane.total_seats,
@@ -111,13 +117,13 @@ class RouteViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="source",
-                description="Фільтрувати маршрут за початковою точкою",
+                description="Filter routes by source airport ID.",
                 required=False,
                 type=str
             ),
             OpenApiParameter(
                 name="destination",
-                description="Фільтрувати маршрут за кінцевою точкою",
+                description="Filter routes by destination airport ID.",
                 required=False,
                 type=str
             )
@@ -128,7 +134,7 @@ class RouteViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def from_airport(self, request):
-        """Повертає всі маршрути аеропорту."""
+        """Return all routes from the selected airport."""
         airport_id = request.query_params.get("airport_id")
         if airport_id:
             routes = Route.objects.filter(source_id=airport_id)
@@ -163,20 +169,22 @@ class FlightViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="route",
-                description="Фільтрувати рейс за маршрутом по id",
+                description="Filter flights by route ID.",
                 required=False,
                 type=int
             ),
             OpenApiParameter(
                 name="airplane",
-                description="Фільтрувати рейс за літаком по id",
+                description="Filter flights by airplane ID.",
                 required=False,
                 type=int
             ),
             OpenApiParameter(
                 name="departure_time",
-                description="Фільтрувати рейс за часом "
-                            "відправлення (приклад: 2026-11-05T16:00:00Z)",
+                description=(
+                    "Filter flights by departure time "
+                    "(example: 2026-11-05T16:00:00Z)."
+                ),
                 required=False,
                 type=str
             )
@@ -192,7 +200,7 @@ class FlightViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def available_seats(self, request, pk=None):
-        """Отримати кількість доступних місць на рейсі"""
+        """Return available seats for the flight."""
         flight = self.get_object()
         booked_seats = set(
             (t.row, t.seat) for t in flight.tickets.all()
@@ -212,7 +220,7 @@ class FlightViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def upcoming(self, request):
-        """Отримати майбутні рейси"""
+        """Return upcoming flights."""
         flights = self.get_queryset().filter(
             departure_time__gte=timezone.now()
         )
@@ -231,7 +239,7 @@ class CrewViewSet(viewsets.ModelViewSet):
         parameters=[
             OpenApiParameter(
                 name="search",
-                description="Пошук за ім'ям або прізвищем",
+                description="Search by first name or last name.",
                 required=False,
                 type=str
             )
@@ -261,11 +269,11 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        """Створити замовлення для поточного користувача"""
+        """Create an order for the current user."""
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        """Користувач бачить лише свої замовлення"""
+        """Return only orders owned by the current user."""
         queryset = self.queryset
         if self.request.user.is_staff:
             return queryset
@@ -273,7 +281,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def add_ticket(self, request, pk=None):
-        """Додати квиток до замовлення"""
+        """Add a ticket to the selected order."""
         order = self.get_object()
 
         data = request.data.copy()
@@ -287,13 +295,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class TicketViewSet(viewsets.ModelViewSet):
+class TicketViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Користувач бачить тільки свої квитки"""
+        """The user sees only their own tickets."""
         queryset = (
             Ticket.objects.select_related(
                 "order",

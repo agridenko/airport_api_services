@@ -8,107 +8,107 @@
 [![Tests](https://img.shields.io/badge/Tests-19_passing-brightgreen)]()
 [![License](https://img.shields.io/badge/License-MIT-yellow)]()
 
-> **Повнофункціональна REST API система для управління авіарейсами, бронювання квитків та відстеження маршрутів.**
+🇺🇦 [Read in Ukrainian](README.ua.md)
+
+> **A full-featured REST API system for managing flights, booking tickets, and tracking routes.**
 
 ---
 
-## 📋 Зміст
+## 📋 Table of Contents
 
-- [Про проект](#-про-проект)
-- [Основні можливості](#-основні-можливості)
-- [Технології](#-технології)
-- [Архітектура бази даних](#-архітектура-бази-даних)
-- [Швидкий старт](#-швидкий-старт)
-- [API Документація](#-api-документація)
-- [Тестування](#-тестування)
-- [Безпека та права доступу](#-безпека-та-права-доступу)
-- [Автор](#-автор)
-
----
-
-## 🎯 Про проект
-
-**Airport Flight System** — це сучасна REST API система, розроблена для управління авіарейсами та бронювання квитків. Проект демонструє best practices розробки на Django REST Framework з акцентом на продуктивність, безпеку та масштабованість.
-
-### Ключові особливості реалізації:
-
-- 🚀 **Повна Docker-ізація** з автоматичними міграціями та ініціалізацією
-- 🔒 **Role-Based Access Control (RBAC)** — гнучка система прав доступу
-- ⚡ **Оптимізовані запити** — використання `select_related` та `prefetch_related` для усунення N+1 проблеми
-- 💰 **Динамічне ціноутворення** — автоматичний розрахунок вартості квитків на основі відстані маршруту
-- 🧪 **Повне тестове покриття** — 19 тестів, що покривають всі критичні сценарії
-- 📊 **Swagger/OpenAPI документація** — інтерактивна документація API
+- [About the Project](#-about-the-project)
+- [Key Features](#-key-features)
+- [Technologies](#-technologies)
+- [Database Architecture](#-database-architecture)
+- [Quick Start](#-quick-start)
+- [API Documentation](#-api-documentation)
+- [Testing](#-testing)
+- [Security and Permissions](#-security-and-permissions) access](#-security-and-access-rights)
+- [Author](#-author)
 
 ---
 
-## ✨ Основні можливості
+## 🎯 About the Project
 
-### 🛫 Управління рейсами
-- Створення та управління маршрутами між аеропортами
-- Планування рейсів з прив'язкою до літаків та екіпажу
-- Відстеження часу вильоту та прибуття
-- Фільтрація рейсів за маршрутом, датою та літаком
+**Airport Flight System** is a modern REST API system designed for managing flights and booking tickets. The project demonstrates best practices for development using Django REST Framework, with a focus on performance, security, and scalability. ### Key Implementation Features:
 
-### 🎫 Бронювання квитків
-- Автоматичний розрахунок вартості квитка на основі відстані
-- Перевірка доступності місць у реальному часі
-- Валідація рядів та місць відповідно до конфігурації літака
-- Захист від подвійного бронювання одного місця
-
-### 👥 Управління користувачами
-- Реєстрація та авторизація користувачів
-- Ізоляція даних: користувачі бачать тільки свої замовлення
-- Адмін-панель для управління довідниками (аеропорти, літаки, маршрути)
-
-### 📈 Аналітика та звіти
-- Перегляд доступних місць на кожному рейсі
-- Фільтрація майбутніх рейсів
-- Пошук за назвою аеропорту, міста, типу літака
+- 🚀 **Full Dockerization** with automated migrations and initialization
+- 🔒 **Role-Based Access Control (RBAC)** — a flexible access rights system
+- ⚡ **Optimized Queries** — utilization of `select_related` and `prefetch_related` to eliminate the N+1 problem
+- 💰 **Dynamic Pricing** — automated ticket cost calculation based on route distance
+- 🧪 **Comprehensive Test Coverage** — 19 tests covering all critical scenarios
+- 📊 **Swagger/OpenAPI Documentation** — interactive API documentation
 
 ---
 
-## 🛠️ Технології
+## ✨ Core Capabilities
+
+### 🛫 Flight Management
+- Creation and management of routes between airports
+- Flight scheduling, linked to specific aircraft and crew
+- Tracking of departure and arrival times
+- Filtering of flights by route, date, and aircraft
+
+### 🎫 Ticket Booking
+- Automated ticket cost calculation based on distance
+- Real-time seat availability checks
+- Validation of rows and seats according to aircraft configuration
+- Prevention of double-booking for the same seat
+
+### 👥 User Management
+- User registration and authorization
+- Data isolation: users can only view their own bookings
+- Admin panel for managing reference data (airports, aircraft, routes)
+
+### 📈 Analytics and Reporting
+- Viewing available seats on each flight
+- Filtering of upcoming flights
+- Search by airport name, city, or aircraft type
+
+---
+
+## 🛠️ Technologies
 
 ### Backend
-- **Python 3.12** — мова програмування
-- **Django 6.1.2** — веб-фреймворк
-- **Django REST Framework 3.18.3** — створення REST API
-- **PostgreSQL 15** — реляційна база даних
-- **psycopg** — адаптер PostgreSQL для Python
+- **Python 3.12** — programming language
+- **Django 6.1.2** — web framework
+- **Django REST Framework 3.18.3** — for building REST APIs
+- **PostgreSQL 15** — relational database
+- **psycopg** — PostgreSQL adapter for Python
 
-### Інфраструктура
-- **Docker** — контейнеризація
-- **Docker Compose** — оркестрація контейнерів
-- **Gunicorn** — WSGI сервер для продакшну (опціонально)
+### Infrastructure
+- **Docker** — containerization
+- **Docker Compose** — container orchestration
+- **Gunicorn** — WSGI server for production (optional)
 
-### Документація та тестування
-- **drf-yasg** — генерація Swagger/OpenAPI документації
-- **Django Debug Toolbar** — профілювання та відладка
-- **pytest-django** — тестування API
+### Documentation and Testing
+- **drf-yasg** — Swagger/OpenAPI documentation generation
+- **Django Debug Toolbar** — profiling and debugging
+- **pytest-django** — API testing
 
-### Додаткові бібліотеки
-- **django-filter** — фільтрація запитів
-- **python-decouple** — управління змінними оточення
-- **Pillow** — обробка зображень (якщо потрібно)
+### Additional Libraries
+- **django-filter** — query filtering
+- **python-decouple** — environment variable management
+- **Pillow** — image processing (if needed)
 
 ---
 
-## 🗄️ Архітектура бази даних
+## 🗄️ Database Architecture
 
-### Моделі даних
+### Data Models
 
-| Модель | Опис | Ключові поля |
-|--------|------|--------------|
-| **Airport** | Аеропорт | name, closest_big_city |
-| **AirplaneType** | Тип літака | name |
-| **Airplane** | Літак | name, rows, seats_in_row, airplane_type |
-| **Route** | Маршрут | source, destination, distance |
-| **Flight** | Рейс | route, airplane, departure_time, arrival_time, crew |
-| **Crew** | Член екіпажу | first_name, last_name |
-| **Order** | Замовлення | user, created_at |
-| **Ticket** | Квиток | flight, order, row, seat, price |
+| Model | Description | Key Fields |
+|-------|-------------|------------|
+| **Airport** | Airport | name, closest_big_city |
+| **AirplaneType** | Aircraft type | name |
+| **Airplane** | Aircraft | name, rows, seats_in_row, airplane_type |
+| **Route** | Route | source, destination, distance |
+| **Flight** | Flight | route, airplane, departure_time, arrival_time, crew |
+| **Crew** | Crew member | first_name, last_name |
+| **Order** | Order | user, created_at |
+| **Ticket** | Ticket | flight, order, row, seat, price |
 
-### Зв'язки між моделями
+### Relationships Between Models
 
 - **Airport** ←→ **Route**: One-to-Many (source/destination)
 - **Route** ←→ **Flight**: One-to-Many
@@ -120,121 +120,123 @@
 
 ---
 
-## 🚀 Швидкий старт
+## 🚀 Quick Start
 
-### Вимоги
+### Requirements
 
 - **Docker** (20.10+)
 - **Docker Compose** (2.0+)
 - **Git**
 
-### 1. Клонувати репозиторій
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/yourusername/airport-flight-system.git
 cd airport-flight-system
 ```
 
-### 2. Налаштувати змінні оточення
-#### Скопіювати шаблон .env файлу
+### 2. Configure environment variables
+#### Copy the .env file template
 ```bash
 cp .env.example .env
 ```
 
-### 3. Запустити проект
+### 3. Run the project
 ```bash
-# Зібрати та запустити контейнери
+# Build and run
+...the containers
 docker-compose up --build
 
-# Або запустити у фоновому режимі
+# Or run in the background
 docker-compose up -d --build
 ```
 
-### 4. Створити суперкористувача (опціонально)
+### 4. Create a superuser (optional)
 ```bash
-# Контейнер автоматично створює адміна з credentials:
+# The container automatically creates an admin with the following credentials:
 # Username: admin
 # Email: admin@example.com
 # Password: admin_123456
 
-# Або створити власного суперкористувача:
+# Or create your own superuser:
 docker-compose exec web python manage.py createsuperuser
 ```
 
-### 5. Відкрити додаток
+### 5. Access the application
 - API Root: http://localhost:8000/api/
 - Admin Panel: http://localhost:8000/admin/
 - Swagger Docs: http://localhost:8000/api/docs/
 - ReDoc: http://localhost:8000/api/redoc/
 
 
-## 📚 API Документація
+## 📚 API Documentation
 - [OpenAPI Specification](http://localhost:8000/api/schema/openapi.yaml)
 - [ReDoc](http://localhost:8000/api/redoc/)
 - [Swagger UI](http://localhost:8000/api/docs/)
 
 
-## 🧪 Тестування
-#### Проект має повне тестове покриття з 19 тестами, які перевіряють:
-- ✅ CRUD операції для всіх моделей
-- ✅ Фільтрацію та пошук
-- ✅ Кастомні actions (available_seats, upcoming, from_airport)
-- ✅ Права доступу (RBAC)
-- ✅ Ізоляцію даних користувачів
-- ✅ Валідацію бізнес-логіки (ціна, місця, час)
-- ✅ Обробку помилок
+## 🧪 Testing
+#### The project has full test coverage with 19 tests verifying:
+- ✅ CRUD operations for all models
+- ✅ Filtering and search
+- ✅ Custom actions (available_seats, upcoming, from_airport)
+- ✅ Access rights (RBAC)
+- ✅ User data isolation
+- ✅ Business logic validation (price, seats, time)
+- ✅ Error handling
 
-#### Запуск тестів
+#### Running tests
 ```bash
-# Запустити всі тести
+# Run all tests
 docker-compose run --rm web python manage.py test
 
-# Запустити тести з детальним виводом
+# Run tests with detailed output
+output
 docker-compose run --rm web python manage.py test flights -v 2
 ```
 
-## 🔒 Безпека та права доступу
+## 🔒 Security and Access Control
 
 ### Role-Based Access Control (RBAC)
-#### Система використовує три рівні доступу:
-#### 1. Публічний доступ (AllowAny)
-- Перегляд аеропортів
-- Перегляд типів літаків
-- Перегляд літаків
-- Перегляд маршрутів
-- Перегляд рейсів
-- Перегляд екіпажу
+#### The system employs three access levels:
+#### 1. Public Access (AllowAny)
+- View airports
+- View aircraft types
+- View aircraft
+- View routes
+- View flights
+- View crew
 
-#### 2. Авторизований користувач (IsAuthenticated)
-- Створення замовлень
-- Перегляд власних замовлень
-- Додавання квитків до власних замовлень
-- Перегляд власних квитків
+#### 2. Authenticated User (IsAuthenticated)
+- Create orders
+- View own orders
+- Add tickets to own orders
+- View own tickets
 
-#### 3. Адміністратор (IsAdminUser / IsStaff)
-- CRUD операції з аеропортами
-- CRUD операції з літаками
-- CRUD операції з маршрутами
-- CRUD операції з рейсами
-- CRUD операції з екіпажем
-- Перегляд всіх замовлень та квитків
+#### 3. Administrator (IsAdminUser / IsStaff)
+- CRUD operations for airports
+- CRUD operations for aircraft
+- CRUD operations for routes
+- CRUD operations for flights
+- CRUD operations for crew
+- View all orders and tickets
 
-### Ізоляція даних
-- **Користувачі** бачать тільки свої замовлення та квитки
-- **Адміністратори** бачать всі дані в системі
-- **Спроба доступу** до чужих даних повертає 404 Not Found
+### Data Isolation
+- **Users** can only see their own orders and tickets
+- **Administrators** can see all data in the system
+- **Attempts to access** data belonging to other users result in a 404 Not Found error
 
-### Валідація та захист
-- ✅ Автоматичний розрахунок ціни квитка (не можна маніпулювати)
-- ✅ Перевірка доступності місць перед бронюванням
-- ✅ Валідація рядів та місць відповідно до конфігурації літака
-- ✅ Захист від подвійного бронювання одного місця
-- ✅ Перевірка часу вильоту/прибуття (не можна створити рейс у минулому)
-- ✅ CSRF захист для сесійної авторизації
-- ✅ Rate limiting (опціонально, через Django REST Framework throttling)
+### Validation and Protection
+- ✅ Automatic ticket price calculation (cannot be manipulated)
+- ✅ Seat availability check prior to booking
+- ✅ Validation of rows and seats based on aircraft configuration
+- ✅ Prevention of double-booking for the same seat
+- ✅ Departure/arrival time verification (cannot create a flight in the past)
+- ✅ CSRF protection for session-based authentication
+- ✅ Rate limiting (optionally, via Django REST Framework throttling)
 
 
-## 👨‍💻 Автор
+## 👨‍💻 Author
 **Alexey Hridenko**
 - **GitHub:** https://github.com/agridenko
 - **Email:** agridenko@gmail.com

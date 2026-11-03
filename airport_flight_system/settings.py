@@ -23,7 +23,7 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 
-# Читаємо зміні з файлу .env
+# Read environment variables from the .env file.
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
@@ -60,9 +60,11 @@ INSTALLED_APPS = [
     "django_filters",
     "users",
     "flights",
+    "corsheaders"
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -93,6 +95,16 @@ TEMPLATES = [
 WSGI_APPLICATION = "airport_flight_system.wsgi.application"
 
 AUTH_USER_MODEL = "users.User"
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vite dev server
+    "http://localhost:3000",  # Якщо використовуєш інший порт
+    "http://127.0.0.1:5173",
+]
+
+# Allow credentials such as cookies and authorization headers.
+CORS_ALLOW_CREDENTIALS = True
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
@@ -173,7 +185,10 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "10/day", "user": "30/day"},
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/day",
+        "user": "1000/day"
+    },
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
@@ -201,9 +216,9 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
 }
 
-# --- Налаштування Django Debug Toolbar для Docker ---
+# --- Setting up Django Debug Toolbar for Docker ---
 if DEBUG:
-    # Ця функція перевизначає стандартну перевірку INTERNAL_IPS
+    # Override the default INTERNAL_IPS check for Docker environments.
     def show_toolbar(request):
         return True
 

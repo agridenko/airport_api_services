@@ -10,9 +10,9 @@ class UserAdmin(DjangoUserAdmin):
     """Define admin model for custom user model with no username field."""
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Персональна інформація"), {"fields": ("first_name", "last_name")}),
+        (_("Personal information"), {"fields": ("first_name", "last_name")}),
         (
-            _("Права доступу"),
+            _("Permissions"),
             {
                 "fields": (
                     "is_active",
@@ -23,7 +23,7 @@ class UserAdmin(DjangoUserAdmin):
                 )
             },
         ),
-        (_("Історія"), {"fields": ("last_login", "date_joined")}),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     add_fieldsets = (
         (

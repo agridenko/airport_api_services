@@ -1,28 +1,26 @@
 from decimal import Decimal
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils import timezone
-
-from airport_flight_system import settings
 
 
 class Airport(models.Model):
     """Airport model."""
     name = models.CharField(
         max_length=255,
-        verbose_name="Назва",
+        verbose_name="Name",
         unique=True,
     )
     closest_big_city = models.CharField(
         max_length=255,
-        verbose_name="Найближче велике місто",
+        verbose_name="Closest big city",
     )
 
     class Meta:
-        verbose_name = "Аеропорт"
-        verbose_name_plural = "Аеропорти"
+        verbose_name = "Airport"
+        verbose_name_plural = "Airports"
         ordering = ["name"]
 
     def __str__(self):
@@ -30,15 +28,15 @@ class Airport(models.Model):
 
 
 class AirplaneType(models.Model):
-    """Тип літака"""
+    """Airplane type model."""
     name = models.CharField(
         max_length=255,
-        verbose_name="Назва",
+        verbose_name="Name",
     )
 
     class Meta:
-        verbose_name = "Тип літака"
-        verbose_name_plural = "Типи літаків"
+        verbose_name = "Airplane type"
+        verbose_name_plural = "Airplane types"
         ordering = ["name"]
 
     def __str__(self):
@@ -46,27 +44,27 @@ class AirplaneType(models.Model):
 
 
 class Airplane(models.Model):
-    """Літак"""
+    """Airplane model."""
     name = models.CharField(
         max_length=255,
-        verbose_name="Назва",
+        verbose_name="Name",
     )
     rows = models.IntegerField(
-        verbose_name="Кількість рядів",
+        verbose_name="Rows count",
     )
     seats_in_row = models.IntegerField(
-        verbose_name="Кількість місць у ряду",
+        verbose_name="Seats per row",
     )
     airplane_type = models.ForeignKey(
         AirplaneType,
         on_delete=models.CASCADE,
         related_name="airplanes",
-        verbose_name="Тип літака",
+        verbose_name="Airplane type",
     )
 
     class Meta:
-        verbose_name = "Літак"
-        verbose_name_plural = "Літаки"
+        verbose_name = "Airplane"
+        verbose_name_plural = "Airplanes"
         ordering = ["name"]
 
     def __str__(self):
@@ -74,31 +72,31 @@ class Airplane(models.Model):
 
     @property
     def total_seats(self):
-        """Загальна кількість місць у літаку"""
+        """Return the total number of seats in the airplane."""
         return self.rows * self.seats_in_row
 
 
 class Route(models.Model):
-    """Маршрут між двома аеропортами"""
+    """Route between two airports."""
     source = models.ForeignKey(
         Airport,
         on_delete=models.CASCADE,
         related_name="source_routes",
-        verbose_name="Початковий аеропорт"
+        verbose_name="Source airport"
     )
     destination = models.ForeignKey(
         Airport,
         on_delete=models.CASCADE,
         related_name="destination_routes",
-        verbose_name="Кінцевий аеропорт"
+        verbose_name="Destination airport"
     )
     distance = models.IntegerField(
-        verbose_name="Відстань",
+        verbose_name="Distance",
     )
 
     class Meta:
-        verbose_name = "Маршрут"
-        verbose_name_plural = "Маршрути"
+        verbose_name = "Route"
+        verbose_name_plural = "Routes"
         ordering = ["id"]
 
     def __str__(self):
@@ -109,39 +107,39 @@ class Route(models.Model):
 
     def clean(self):
         if self.source == self.destination:
-            raise ValidationError("Аеропорти не можуть бути однаковими.")
+            raise ValidationError("Airports cannot be the same.")
 
 
 class Flight(models.Model):
-    """Рейс переліту"""
+    """Flight model."""
     route = models.ForeignKey(
         Route,
         on_delete=models.CASCADE,
         related_name="flights",
-        verbose_name="Маршрут"
+        verbose_name="Route"
     )
     airplane = models.ForeignKey(
         Airplane,
         on_delete=models.CASCADE,
         related_name="flights",
-        verbose_name="Літак",
+        verbose_name="Airplane",
     )
     departure_time = models.DateTimeField(
-        verbose_name="Час відправлення",
+        verbose_name="Departure time",
     )
     arrival_time = models.DateTimeField(
-        verbose_name="Час прибуття",
+        verbose_name="Arrival time",
     )
     crew = models.ManyToManyField(
         "Crew",
         related_name="flights",
         blank=True,
-        verbose_name="Екіпаж",
+        verbose_name="Crew",
     )
 
     class Meta:
-        verbose_name = "Рейс"
-        verbose_name_plural = "Рейси"
+        verbose_name = "Flight"
+        verbose_name_plural = "Flights"
         ordering = ["departure_time"]
 
     def __str__(self):
@@ -152,29 +150,30 @@ class Flight(models.Model):
 
     def clean(self):
         if self.departure_time < timezone.now():
-            raise ValidationError("Вибірка рейсу не може бути в минулому.")
+            raise ValidationError(
+                "Flight departure time cannot be in the past."
+            )
 
         if self.arrival_time <= self.departure_time:
             raise ValidationError(
-                "Час прибуття не може "
-                "бути раніше часу відправлення."
+                "Arrival time cannot be earlier than departure time."
             )
 
 
 class Crew(models.Model):
-    """Екіпаж на рейсі"""
+    """Crew member model."""
     first_name = models.CharField(
         max_length=255,
-        verbose_name="Ім'я",
+        verbose_name="First name",
     )
     last_name = models.CharField(
         max_length=255,
-        verbose_name="Прізвище",
+        verbose_name="Last name",
     )
 
     class Meta:
-        verbose_name = "Член екіпажу"
-        verbose_name_plural = "Екіпаж"
+        verbose_name = "Crew member"
+        verbose_name_plural = "Crew members"
         ordering = ["first_name", "last_name"]
 
     def __str__(self):
@@ -182,58 +181,58 @@ class Crew(models.Model):
 
 
 class Order(models.Model):
-    """Замовлення на рейс"""
+    """Order model."""
     created_at = models.DateTimeField(
         auto_now_add=True,
-        verbose_name="Дата та час замовлення",
+        verbose_name="Created at",
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="orders",
-        verbose_name="Користувач",
+        verbose_name="User",
     )
 
     class Meta:
-        verbose_name = "Замовлення"
-        verbose_name_plural = "Замовлення"
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"Замовлення №{self.id} (User ID: {self.user_id})"
+        return f"Order #{self.id} (User ID: {self.user_id})"
 
     @property
     def total_cost(self):
-        """Загальна вартість замовлення з фолбеком для кэшу БД"""
+        """Return the total order cost with a fallback for DB annotations."""
         if hasattr(self, "total_order_cost"):
             return self.total_order_cost or 0
         return sum(ticket.price for ticket in self.tickets.all())
 
 
 class Ticket(models.Model):
-    """Білет на рейс"""
+    """Ticket model."""
     row = models.IntegerField(
-        verbose_name="Ряд"
+        verbose_name="Row"
     )
     seat = models.IntegerField(
-        verbose_name="Місце"
+        verbose_name="Seat"
     )
     flight = models.ForeignKey(
         Flight,
         on_delete=models.CASCADE,
         related_name="tickets",
-        verbose_name="Рейс"
+        verbose_name="Flight"
     )
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
         related_name="tickets",
-        verbose_name="Замовлення"
+        verbose_name="Order"
     )
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name="Ціна",
+        verbose_name="Price",
         null=True,
         blank=True
     )
@@ -244,8 +243,8 @@ class Ticket(models.Model):
         return base_price + distance_multiplier
 
     class Meta:
-        verbose_name = "Квиток"
-        verbose_name_plural = "Квитки"
+        verbose_name = "Ticket"
+        verbose_name_plural = "Tickets"
         unique_together = ("row", "seat", "flight")
         ordering = ["flight", "row", "seat"]
 
@@ -255,18 +254,22 @@ class Ticket(models.Model):
     @staticmethod
     def validate_ticket(row, seat, flight):
         if row > flight.airplane.rows:
-            raise ValidationError(f"Ряд {row} не існує в цьому літаку")
+            raise ValidationError(
+                f"Row {row} does not exist on this airplane."
+            )
         if seat > flight.airplane.seats_in_row:
-            raise ValidationError(f"Місце {seat} не існує в цьому рядку")
+            raise ValidationError(
+                f"Seat {seat} does not exist in this row."
+            )
 
     def clean(self):
         Ticket.validate_ticket(self.row, self.seat, self.flight)
 
     def save(self, *args, **kwargs):
-        """Записуэмо ціну квитка пристворені з разрахунку"""
+        """Set the ticket price automatically when the ticket is created."""
         if not self.price:
             base_price = Decimal("50.00")
-            # Перевіряємо, чи є маршрут і відстань, щоб не було помилок
+            # Check route and distance to avoid errors.
             if self.flight.route and self.flight.route.distance:
                 distance_multiplier = Decimal(
                     str(self.flight.route.distance)

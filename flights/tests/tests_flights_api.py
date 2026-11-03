@@ -21,7 +21,7 @@ from flights.models import (
 
 User = get_user_model()
 
-# Вимикаємо тротлінг для стабільності тестів
+# Disable throttling for test stability
 REST_FRAMEWORK_NO_THROTTLE = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": [],
@@ -38,7 +38,7 @@ REST_FRAMEWORK_NO_THROTTLE = {
 
 @override_settings(REST_FRAMEWORK=REST_FRAMEWORK_NO_THROTTLE)
 class BaseFlightsAPITestCase(APITestCase):
-    """Спільна підготовка даних і клієнтів для API-тестів."""
+    """Joint preparation of data and clients for API tests."""
 
     def setUp(self):
         self.client = APIClient()
@@ -100,42 +100,42 @@ class BaseFlightsAPITestCase(APITestCase):
 
 class AirportApiTests(BaseFlightsAPITestCase):
     def test_list_airports_public(self):
-        """Аеропорти можуть переглядати всі (публічний доступ)"""
+        """Airports can be viewed by everyone (public access)"""
         url = reverse("flights:airport-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 3)
 
     def test_create_airport_requires_admin(self):
-        """Створити аеропорт може тільки адмін"""
+        """Only an admin can create an airport."""
         url = reverse("flights:airport-list")
         payload = {"name": "Kharkiv International", "closest_big_city": "Kharkiv"}
 
-        # 1. Без авторизації
+        # 1. Without authorization
         response = self.client.post(url, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-        # 2. Звичайний користувач
+        # 2. Regular user
         self.authenticate(self.user)
         response = self.client.post(url, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # 3. Адмін
+        # 3. Admin
         self.authenticate(self.admin)
         response = self.client.post(url, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Airport.objects.count(), 4)
 
     def test_update_and_delete_airport_requires_admin(self):
-        """Оновлювати та видаляти аеропорт може тільки адмін"""
+        """Only admin can update and delete an airport."""
         url = reverse("flights:airport-detail", args=[self.airport_odesa.id])
 
-        # Спроба звичайного користувача
+        # An ordinary user's attempt
         self.authenticate(self.user)
         response = self.client.patch(url, {"closest_big_city": "Odesa City"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # Спроба адміна
+        # Admin's attempt
         self.authenticate(self.admin)
         response = self.client.patch(url, {"closest_big_city": "Odesa City"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -149,11 +149,11 @@ class AirplaneTypeApiTests(BaseFlightsAPITestCase):
     def test_list_and_create_airplane_type(self):
         url = reverse("flights:airplane-type-list")
 
-        # Читання публічне
+        # Public Reading
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Створення тільки для адміна
+        # Creation for admin only
         self.authenticate(self.admin)
         response = self.client.post(url, {"name": "Embraer E190"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -257,11 +257,11 @@ class CrewApiTests(BaseFlightsAPITestCase):
     def test_list_and_create_crew(self):
         url = reverse("flights:crew-list")
 
-        # Читання публічне
+        # Public Reading
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Створення тільки для адміна
+        # Creation for admin only
         self.authenticate(self.admin)
         response = self.client.post(
             url, {"first_name": "Petro", "last_name": "Steward"}, format="json"
@@ -287,7 +287,7 @@ class OrderApiTests(BaseFlightsAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         order_id = response.data["id"]
 
-        # Створюємо чуже замовлення, щоб перевірити ізоляцію
+        # We create an order for another entity to test isolation.
         Order.objects.create(user=self.other_user)
 
         response = self.client.get(url)
@@ -310,12 +310,12 @@ class OrderApiTests(BaseFlightsAPITestCase):
         self.assertEqual(Decimal(response.data["price"]), expected_price)
 
     def test_add_ticket_invalid_seat_fails(self):
-        """Перевірка валідації неіснуючого місця"""
+        """Validation check for a non-existent location"""
         self.authenticate(self.user)
         order = Order.objects.create(user=self.user)
         url = reverse("flights:order-add-ticket", args=[order.id])
 
-        # Літак має 10 рядів і 6 місць. 999 має викликати помилку.
+        # The plane has 10 rows and 6 seats. 999 should trigger an error.
         response = self.client.post(
             url,
             {"flight_id": self.flight.id, "row": 999, "seat": 999},
@@ -325,7 +325,7 @@ class OrderApiTests(BaseFlightsAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         self.assertIn("non_field_errors", response.data)
-        self.assertIn("не існує", str(response.data["non_field_errors"]))
+        self.assertIn("does not exist", str(response.data["non_field_errors"]))
 
 
 class TicketApiTests(BaseFlightsAPITestCase):
@@ -356,5 +356,18 @@ class TicketApiTests(BaseFlightsAPITestCase):
         url = reverse("flights:ticket-detail", args=[self.other_ticket.id])
         response = self.client.get(url)
 
-        # Має бути 404, бо get_queryset фільтрує по user, і об'єкт не знайдено
+        # It should be a 404, because `get_queryset` filters by `user`, and the object is not found.
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_ticket_not_allowed(self):
+        self.authenticate(self.user)
+        url = reverse("flights:ticket-list")
+        payload = {
+            "flight_id": self.flight.id,
+            "row": 5,
+            "seat": 1,
+        }
+
+        response = self.client.post(url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
